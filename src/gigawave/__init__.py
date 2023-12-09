@@ -2,7 +2,6 @@ from typing import Optional, List
 
 import serial
 import numpy as np
-import numpy.typing as npt
 from scipy.optimize import curve_fit
 from scipy.special import erf
 
@@ -200,7 +199,7 @@ class GigaWave:
         delay: float,
         channel: Optional[int] = None,
         calibrate_timebase: bool = True,
-    ) -> npt.NDArray[float]:
+    ) -> np.ndarray:
         """
         :param delay: The post-trigger delay in nanoseconds to sample at.
         :param channel: The channel to sample, or None to sample all channels.
