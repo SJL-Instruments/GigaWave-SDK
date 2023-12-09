@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 scope = GigaWave('/dev/ttyUSB0')
 
 # Initialize trigger settings
-scope.trigger_direction = 'rising' # V
+scope.trigger_direction = 'rising'
 scope.trigger_level = 0 # V
 scope.trigger_holdoff = 100 # ns
 
