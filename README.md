@@ -36,3 +36,11 @@ plt.xlabel('Voltage [V]')
 plt.ylabel('CDF Value')
 plt.show()
 ```
+
+## Timebase Calibration
+By default, the `get_voltage` and `get_cdf` commands will calibrate the internal timebase on every call.
+Acquisition can be significantly sped up by skipping this step (pass `calibrate_timebase = False`).
+
+If this option is used, it is the user's responsibility to calibrate the timebase on a regular basis.
+The required calibration frequency will depend on the precision required for the application,
+and will decrease as the scope's temperature stabilizes.
