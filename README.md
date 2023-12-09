@@ -2,8 +2,7 @@
 Easy-to-use Python interface for [GigaWave™ 6000-Series](https://sjl-instruments.com) Digital Sampling Oscilloscopes.
 
 ## Quickstart
-Install via `pip3 install gigawave`, or just clone the repository to run the example code.
-The `example.py` file is an easy way to get started:
+Install via `pip3 install gigawave`. The `example.py` file is an easy way to get started:
 ```python
 from gigawave import GigaWave
 import numpy as np
@@ -42,5 +41,5 @@ By default, the `get_voltage` and `get_cdf` commands will calibrate the internal
 Acquisition can be significantly sped up by skipping this step (pass `calibrate_timebase = False`).
 
 If this option is used, it is the user's responsibility to calibrate the timebase on a regular basis.
-The required calibration frequency will depend on the precision required for the application,
+The required calibration frequency will vary depending on the application,
 and will decrease as the scope's temperature stabilizes.
