@@ -242,12 +242,17 @@ class GigaWave:
         if raw_data.startswith(b'NO TRIG'): raise TriggerError('No trigger detected!')
         if not raw_data.endswith(sentry): raise AssertionError('CDF read failed! [Sentry missing]')
 
-        prefix, data = raw_data[:34].strip().split(b' '), raw_data[34:-len(sentry)]
-        if len(prefix) != 5: raise AssertionError('CDF read failed! [Incorrect prefix length]')
-        samples, sysclk_time, tot_cycles, N = int(prefix[1]), int(prefix[2]), int(prefix[3]), int(prefix[4])
-        sample_rate = samples/sysclk_time
+        for header_length in [34, 35]: # Try both header lengths for different firmware revisions
+            prefix, data = raw_data[:header_length].strip().split(b' '), raw_data[header_length:-len(sentry)]
+            if len(prefix) != 5: raise AssertionError('CDF read failed! [Incorrect prefix length]')
+            samples, sysclk_time, tot_cycles, N = int(prefix[1]), int(prefix[2]), int(prefix[3]), int(prefix[4])
+            sample_rate = samples/sysclk_time
 
-        if len(data) != self._n_channels*3*N: raise AssertionError('CDF read failed! [Incorrect data length]')
+            if len(data) != self._n_channels*3*N:
+                if header_length == 34: continue
+                raise AssertionError('CDF read failed! [Incorrect data length]')
+
+            break
 
         # Parse array
         dt = np.dtype(np.uint8)
