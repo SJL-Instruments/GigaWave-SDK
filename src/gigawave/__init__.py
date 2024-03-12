@@ -92,7 +92,7 @@ class GigaWave:
         """
         if direction not in ['rising', 'falling']:
             raise ValueError('Trigger direction must be `rising` or `falling`.')
-        idx = 0 if 'falling' else 1
+        idx = 0 if (direction == 'falling') else 1
         self._trigger_direction = direction
         assert self._query(f'E{idx}').startswith('OK E')
 
