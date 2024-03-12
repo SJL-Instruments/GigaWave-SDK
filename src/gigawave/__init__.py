@@ -22,7 +22,10 @@ class GigaWave:
         self.trigger_level = 0
         self.trigger_direction = 'rising'
         self.trigger_holdoff = 50
-        self.samples = 4096
+
+        self.min_samples = 4096
+        self.max_samples = 4000000
+        self.samples_per_cdf = 40
 
         # Read calibration coefficients
         cal_coeffs = list(map(float, self._query('^').split()))
@@ -34,7 +37,7 @@ class GigaWave:
 
     def _init_conn(self) -> None:
         """Initialize connection to the scope."""
-        self._conn = serial.Serial(self._port, baudrate=921600, timeout=0.3)
+        self._conn = serial.Serial(self._port, baudrate=921600, timeout=5)
         self._conn.reset_input_buffer()
 
     def _query(self, command: str) -> str:
@@ -134,23 +137,61 @@ class GigaWave:
         assert self._query(f'H{holdoff:.0f}').startswith('OK H')
 
     @property
-    def samples(self) -> int:
+    def min_samples(self) -> int:
         """
-        The number of triggers used to acquire each CDF sample.
+        The minimum number of triggers used to acquire each CDF sample.
         """
-        return self._samples
+        return self._min_samples
 
-    @samples.setter
-    def samples(self, n: int) -> None:
+    @min_samples.setter
+    def min_samples(self, n: int) -> None:
         """
         Sets the number of triggers used to acquire each CDF sample.
-        Must be between 16 and 32768 inclusive.
+        Must be between 5 and 30000 inclusive.
         """
-        if not (16 <= n <= 32768):
-            raise ValueError(f'Number of samples must be between 16 and 32768.')
+        if not (5 <= n <= 30000):
+            raise ValueError(f'Minimum number of samples must be between 5 and 30000.')
 
-        self._samples = n
+        self._min_samples = n
         assert self._query(f'S{n}').startswith('OK S')
+
+    @property
+    def max_samples(self) -> int:
+        """
+        The maximum number of triggers used to acquire each CDF sample.
+        """
+        return self._max_samples
+
+    @max_samples.setter
+    def max_samples(self, n: int) -> None:
+        """
+        Sets the number of triggers used to acquire each CDF sample.
+        Must be between 5 and 4 billion inclusive.
+        """
+        if not (5 <= n <= 4000000000):
+            raise ValueError(f'Maximum number of samples must be between 5 and 4 billion.')
+
+        self._max_samples = n
+        assert self._query(f'${n}').startswith('OK $')
+
+    @property
+    def samples_per_cdf(self) -> int:
+        """
+        The number of sample voltages to acquire per CDF.
+        """
+        return self._samples_per_cdf
+
+    @samples_per_cdf.setter
+    def samples_per_cdf(self, n: int) -> None:
+        """
+        Sets the number of sample voltages to acquire per CDF.
+        Must be between 5 and 100 inclusive.
+        """
+        if not (5 <= n <= 100):
+            raise ValueError(f'Number of samples must be between 5 and 100.')
+
+        self._samples_per_cdf = n
+        assert self._query(f'Q{n}').startswith('OK Q')
 
     def get_voltage(
         self,
