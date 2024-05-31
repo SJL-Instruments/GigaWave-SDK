@@ -17,7 +17,9 @@ class GigaWave:
 
         self.calibrate_timebase()
 
-        self._n_channels = 4
+        name = self._query('*IDN?')
+
+        self._n_channels = 8 if '6800' in name else 4
 
         self.trigger_level = 0
         self.trigger_direction = 'rising'
@@ -31,8 +33,8 @@ class GigaWave:
         cal_coeffs = list(map(float, self._query('^').split()))
         self._firmware_revision = round(cal_coeffs[0])
         self._serial = round(cal_coeffs[1])
-        self._offsets = np.array(cal_coeffs[2:6]) + 1 # 1 mV default offset
-        self._scales = np.array(cal_coeffs[6:])
+        self._offsets = np.array(cal_coeffs[2:2 + self._n_channels]) + 1 # 1 mV default offset
+        self._scales = np.array(cal_coeffs[2 + self._n_channels:])
 
 
     def _init_conn(self) -> None:
